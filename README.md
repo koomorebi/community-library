@@ -10,6 +10,7 @@
 - 📊 **数据统计** — 仪表盘概览、借阅热度排行榜（月榜/年榜/总榜）
 - 🔍 **图书历史** — 查看每本书的完整借阅记录
 - 👤 **会员详情** — 查看会员借阅统计和历史记录
+- ⏰ **提醒设置** — 逾期提醒配置（UI 已实现，后期待接入通知服务）
 - 🔐 **权限认证** — 管理员登录、JWT Token 认证
 
 ## 🛠️ 技术栈
@@ -40,6 +41,7 @@ community-library/
 │   │   ├── config.py          # 配置
 │   │   ├── database.py        # 数据库连接
 │   │   └── main.py            # 应用入口
+│   ├── seed_data.py           # 示例数据生成脚本
 │   ├── requirements.txt       # Python 依赖
 │   └── run.py                 # 启动脚本
 ├── frontend/                   # 前端应用
@@ -51,6 +53,8 @@ community-library/
 │   │   └── main.js            # 入口文件
 │   ├── package.json           # Node 依赖
 │   └── vite.config.js         # Vite 配置
+├── setup.sh / setup.bat       # 一键初始化脚本
+├── start.sh / start.bat       # 一键启动脚本
 └── PRD.md                      # 产品需求文档
 ```
 
@@ -71,9 +75,9 @@ setup.bat
 ```
 
 初始化脚本会自动：
-- 创建 Python 虚拟环境
-- 安装所有依赖
-- 创建数据库并生成示例数据
+- ✅ 创建 Python 虚拟环境
+- ✅ 安装所有依赖
+- ✅ 创建数据库并生成示例数据
 
 ### 方式二：一键启动
 
@@ -88,44 +92,21 @@ start.bat
 ### 方式三：手动启动
 
 ```bash
-git clone https://github.com/koomorebi/community-library.git
-cd community-library
-```
-
-### 2. 启动后端
-
-```bash
+# 后端
 cd backend
-
-# 创建虚拟环境
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 # 或 venv\Scripts\activate  # Windows
-
-# 安装依赖
 pip install -r requirements.txt
-
-# 启动服务
 python run.py
-```
 
-后端将运行在 http://localhost:8001
-
-### 3. 启动前端
-
-```bash
+# 前端（新终端）
 cd frontend
-
-# 安装依赖
 npm install
-
-# 启动开发服务器
 npm run dev
 ```
 
-前端将运行在 http://localhost:5174
-
-### 4. 访问系统
+### 访问系统
 
 - **前端页面**: http://localhost:5174
 - **API 文档**: http://localhost:8001/docs
@@ -133,22 +114,66 @@ npm run dev
 
 ## 📡 API 接口
 
-| 模块 | 接口 | 说明 |
+### 认证模块
+| 方法 | 路径 | 说明 |
 |------|------|------|
-| 认证 | `POST /api/v1/auth/login` | 管理员登录 |
-| 图书 | `GET /api/v1/books` | 获取图书列表 |
-| 图书 | `POST /api/v1/books` | 新增图书 |
-| 图书 | `PUT /api/v1/books/{id}` | 修改图书 |
-| 图书 | `DELETE /api/v1/books/{id}` | 删除图书 |
-| 分类 | `GET /api/v1/categories` | 获取分类列表 |
-| 分类 | `POST /api/v1/categories` | 新增分类 |
-| 会员 | `GET /api/v1/members` | 获取会员列表 |
-| 会员 | `POST /api/v1/members` | 新增会员 |
-| 借阅 | `POST /api/v1/borrows/borrow` | 借书 |
-| 借阅 | `POST /api/v1/borrows/return` | 还书 |
-| 借阅 | `POST /api/v1/borrows/renew` | 续借 |
-| 统计 | `GET /api/v1/stats` | 获取统计数据 |
-| 排行 | `GET /api/v1/stats/ranking` | 获取借阅排行榜 |
+| POST | `/api/v1/auth/login` | 管理员登录 |
+
+### 图书模块
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/v1/categories` | 获取分类列表 |
+| POST | `/api/v1/categories` | 新增分类 |
+| PUT | `/api/v1/categories/{id}` | 修改分类 |
+| DELETE | `/api/v1/categories/{id}` | 删除分类 |
+| GET | `/api/v1/books` | 获取图书列表 |
+| POST | `/api/v1/books` | 新增图书 |
+| GET | `/api/v1/books/{id}` | 获取图书详情 |
+| PUT | `/api/v1/books/{id}` | 修改图书 |
+| DELETE | `/api/v1/books/{id}` | 删除图书 |
+
+### 会员模块
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/v1/members` | 获取会员列表 |
+| POST | `/api/v1/members` | 新增会员 |
+| GET | `/api/v1/members/{id}` | 获取会员信息 |
+| PUT | `/api/v1/members/{id}` | 修改会员 |
+| DELETE | `/api/v1/members/{id}` | 删除会员 |
+
+### 借阅模块
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| POST | `/api/v1/borrows/borrow` | 借书 |
+| POST | `/api/v1/borrows/return` | 还书 |
+| POST | `/api/v1/borrows/renew` | 续借 |
+| GET | `/api/v1/borrows` | 获取借阅记录 |
+| POST | `/api/v1/borrows/undo` | 撤销借阅 |
+
+### 统计模块
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/v1/stats` | 获取统计数据 |
+| GET | `/api/v1/stats/ranking` | 获取借阅排行榜 |
+
+### 扩展模块
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/v1/books/{id}/history` | 获取图书借阅历史 |
+| GET | `/api/v1/members/{id}/detail` | 获取会员详情 |
+
+## 📊 示例数据
+
+系统内置以下示例数据：
+
+| 类型 | 数量 | 说明 |
+|------|------|------|
+| 管理员 | 1 | admin / admin123 |
+| 图书分类 | 8 | 文学小说、科技计算机、历史传记等 |
+| 图书 | 20 | 涵盖各类经典书籍 |
+| 图书副本 | 48 | 每本书 2-3 个副本 |
+| 会员 | 10 | 北京地区居民 |
+| 借阅记录 | 15 | 7条已还、5条借阅中、3条逾期 |
 
 ## 📸 界面预览
 
@@ -168,22 +193,27 @@ npm run dev
 - 借阅记录列表、状态筛选（全部/借阅中/已归还/逾期）
 - 借书、还书、续借、撤销操作
 
+### 提醒设置
+- 提醒方式配置（短信、邮件、微信）
+- 提醒时间设置
+- 测试发送功能
+
 ## 🗄️ 数据库设计
 
 ### 核心表
 
-- `books` — 图书信息
-- `book_copies` — 图书副本
+- `books` — 图书信息（书名、作者、ISBN、价格）
+- `book_copies` — 图书副本（条码、状态）
 - `categories` — 图书分类
-- `members` — 会员信息
-- `borrows` — 借阅记录
+- `members` — 会员信息（姓名、手机、邮箱、地址）
+- `borrows` — 借阅记录（借书日期、应还日期、实还日期、状态）
 - `admins` — 管理员账号
 
 ### 借阅状态
 
 - `borrowed` — 借阅中
 - `returned` — 已归还
-- `overdue` — 逾期
+- `overdue` — 逾期（系统自动检测）
 
 ## 🔧 配置说明
 
