@@ -56,7 +56,36 @@ community-library/
 
 ## 🚀 快速开始
 
-### 1. 克隆项目
+### 方式一：一键初始化（推荐）
+
+```bash
+# 克隆项目
+git clone https://github.com/koomorebi/community-library.git
+cd community-library
+
+# Linux/Mac
+./setup.sh
+
+# Windows
+setup.bat
+```
+
+初始化脚本会自动：
+- 创建 Python 虚拟环境
+- 安装所有依赖
+- 创建数据库并生成示例数据
+
+### 方式二：一键启动
+
+```bash
+# Linux/Mac
+./start.sh
+
+# Windows
+start.bat
+```
+
+### 方式三：手动启动
 
 ```bash
 git clone https://github.com/koomorebi/community-library.git
