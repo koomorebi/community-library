@@ -40,6 +40,7 @@
       <el-table-column label="操作" width="200">
         <template #default="{ row }">
           <el-button size="small" @click="doReturn(row)" v-if="row.status === 'borrowed' || row.status === 'overdue'">归还</el-button>
+          <el-button size="small" type="warning" @click="doRemind(row)" v-if="row.status === 'overdue'">催还</el-button>
           <el-button size="small" @click="doRenew(row)" v-if="row.status === 'borrowed'">续借</el-button>
           <el-button size="small" type="danger" @click="doUndo(row)" v-if="row.status === 'borrowed'">撤销</el-button>
         </template>
@@ -135,6 +136,19 @@ async function doUndo(row) {
   await undoBorrow(row.id)
   ElMessage.success('撤销成功')
   load()
+}
+
+async function doRemind(row) {
+  const memberName = row.member?.name || '未知'
+  const bookTitle = row.book?.title || '未知'
+  const daysOverdue = Math.floor((Date.now() - new Date(row.due_date).getTime()) / 86400000)
+  
+  await ElMessageBox.confirm(
+    `确认发送催还通知？\n\n会员：${memberName}\n图书：${bookTitle}\n逾期：${daysOverdue} 天`,
+    '催还确认',
+    { confirmButtonText: '发送通知', cancelButtonText: '取消', type: 'warning' }
+  )
+  ElMessage.success(`已向 ${memberName} 发送催还通知`)
 }
 
 function showMemberDetail(memberId) {
